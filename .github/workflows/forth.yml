@@ -1,0 +1,29 @@
+name: Forth CI
+
+on:
+  push:
+    paths:
+      - 'hello.fth'
+  pull_request:
+    paths:
+      - 'hello.fth'
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Gforth
+        run: sudo apt-get install -y gforth
+
+      - name: Run Forth script
+        run: gforth hello.fth -e bye
+
+      - name: Verify output
+        run: |
+          OUTPUT=$(gforth hello.fth -e bye 2>/dev/null)
+          echo "Output: $OUTPUT"
+          echo "$OUTPUT" | grep -q "Hello, World!" && echo "PASS" || (echo "FAIL" && exit 1)
